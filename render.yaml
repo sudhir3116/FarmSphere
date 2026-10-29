@@ -23,7 +23,7 @@ services:
       - key: ADMIN_SECRET_KEY
         sync: false
       - key: CORS_ORIGIN
-        sync: false
+        value: https://farmspherefinal.netlify.app,https://6ae36c2c903fa492dd80ff8e--farmspherefinal.netlify.app
       - key: SMS_PROVIDER
         value: twilio
       - key: SMS_TEST_MODE

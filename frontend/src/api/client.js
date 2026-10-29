@@ -1,14 +1,25 @@
 import axios from 'axios';
 
+const normalizeApiBaseUrl = (value) => {
+  const trimmed = value.trim().replace(/\/+$/, '');
+  const withoutApiSuffix = trimmed.replace(/(?:\/api)+$/i, '');
+  return `${withoutApiSuffix}/api`;
+};
+
 const resolveApiBaseUrl = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const configuredApiUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configuredApiUrl) {
+    return normalizeApiBaseUrl(configuredApiUrl);
   }
-  if (import.meta.env.VITE_BACKEND_URL) {
-    const trimmed = import.meta.env.VITE_BACKEND_URL.replace(/\/+$/, '');
-    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+
+  const configuredBackendUrl = import.meta.env.VITE_BACKEND_URL?.trim();
+  if (configuredBackendUrl) {
+    return normalizeApiBaseUrl(configuredBackendUrl);
   }
-  return 'http://localhost:5001/api';
+
+  return import.meta.env.PROD
+    ? 'https://farmsphere-cy3k.onrender.com/api'
+    : 'http://localhost:5001/api';
 };
 
 const API_BASE_URL = resolveApiBaseUrl();

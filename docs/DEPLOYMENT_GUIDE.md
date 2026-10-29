@@ -28,7 +28,7 @@ Configure the following variables in your hosting provider's dashboard (e.g., Re
 | `MONGO_URI` | Yes | `mongodb+srv://<user>:<password>@cluster.mongodb.net/farmsphere?retryWrites=true&w=majority` | MongoDB Atlas database connection string |
 | `JWT_SECRET` | Yes | 64+ char random hex string | Secret key for signing farmer/admin authentication tokens |
 | `JWT_EXPIRE` | No | `7d` | Token validity period (defaults to 7d) |
-| `CORS_ORIGIN` | Yes | `https://your-frontend-domain.com` | Allowed browser frontend origins (comma-separated) |
+| `CORS_ORIGIN` | Yes | `https://farmspherefinal.netlify.app,https://6ae36c2c903fa492dd80ff8e--farmspherefinal.netlify.app` | Exact allowed browser frontend origins (comma-separated; no trailing slashes) |
 | `ADMIN_SECRET_KEY` | Yes | Random secure secret string | Gatekeeper key required for admin user registration |
 
 ### Twilio SMS Provider Configuration
@@ -67,6 +67,14 @@ Configure the following variables in your hosting provider's dashboard (e.g., Re
 6. Click **Deploy Web Service**.
 7. Once deployed, note your public URL:
    * Example: `https://farmsphere-backend.onrender.com`
+
+For FarmSphere production and the supplied deploy preview, set `CORS_ORIGIN` in Render to the comma-separated origins shown above. The backend reads this allowlist before mounting API routes and handles browser preflight requests through the CORS middleware. Keep local origins in local development configuration only.
+
+### Frontend API and Google Identity Services
+
+- In Netlify, set `VITE_API_BASE_URL` to `https://farmsphere-cy3k.onrender.com/api`. The API client normalizes the suffix so `/api` is added exactly once; if the variable is omitted in a production build, it uses this production API URL rather than localhost.
+- The login page uses the public `VITE_GOOGLE_CLIENT_ID` with Google Identity Services and sends the returned ID token to `POST /api/auth/google`. Add `https://farmspherefinal.netlify.app` and `https://6ae36c2c903fa492dd80ff8e--farmspherefinal.netlify.app` under Google Cloud Console → APIs & Services → Credentials → the matching OAuth client → Authorized JavaScript origins. Add any other Netlify deploy-preview domains only if those previews need Google sign-in.
+- No redirect-based Google OAuth callback URL is used by this frontend flow; do not change backend callback settings as part of this CORS fix. Never put `GOOGLE_CLIENT_SECRET` in Netlify or any `VITE_*` variable.
 
 ---
 
